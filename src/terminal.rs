@@ -324,7 +324,7 @@ fn main() {
         Err(e) => { println!("\x1b[31m{}\x1b[0m", e); std::process::exit(1); }
       };
 
-      write!(stdout, "{}", termion::color::Fg(termion::color::Reset)).unwrap();
+      write!(stdout, "{}{}", termion::color::Fg(termion::color::Reset), termion::color::Fg(termion::color::White)).unwrap();
       if !is_final {
         write!(stdout, "\r").unwrap();
         if linesdown > 0 { write!(stdout, "{}", termion::cursor::Up(linesdown as u16)).unwrap(); }
