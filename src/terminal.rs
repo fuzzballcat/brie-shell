@@ -115,7 +115,7 @@ fn main() {
     if let Ok(path) = env::current_dir() { 
       let sfmt = format!("{1}{0} ", prompt, path.display());
       pathlen = sfmt.len();
-      write!(stdout, "{1}{}{2}", sfmt, termion::color::Fg(termion::color::BrightRed), Colors::Reset).unwrap();
+      write!(stdout, "{1}{}{2}", sfmt, termion::color::Fg(termion::color::LightRed), Colors::Reset).unwrap();
       stdout.flush().unwrap();
     } else {
       write!(stdout, "\x1b[31mERR:\x1b[0m Cannot fetch current directory!\n\r").unwrap();
@@ -324,7 +324,7 @@ fn main() {
         Err(e) => { println!("\x1b[31m{}\x1b[0m", e); std::process::exit(1); }
       };
 
-      write!(stdout, "{}{}", termion::color::Fg(termion::color::Reset), termion::color::Fg(termion::color::BrightWhite)).unwrap();
+      write!(stdout, "{}{}", termion::color::Fg(termion::color::Reset), termion::color::Fg(termion::color::LightWhite)).unwrap();
       if !is_final {
         write!(stdout, "\r").unwrap();
         if linesdown > 0 { write!(stdout, "{}", termion::cursor::Up(linesdown as u16)).unwrap(); }
