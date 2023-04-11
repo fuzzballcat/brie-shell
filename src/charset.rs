@@ -363,7 +363,7 @@ impl fmt::Display for Colors {
       Colors::String => write!(f, "{}", termion::color::Fg(termion::color::Green)),
       Colors::Symbol => write!(f, "{}", termion::color::Fg(termion::color::Magenta)),
       Colors::Comment => write!(f, "{}", termion::color::Fg(termion::color::Green)),
-      Colors::Reset => write!(f, "{}", termion::color::Fg(termion::color::Reset))
+      Colors::Reset => write!(f, "{}", termion::color::Fg(termion::color::White))
     }
   }
 }
