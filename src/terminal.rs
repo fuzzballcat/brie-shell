@@ -220,7 +220,7 @@ fn main() {
       stdout.flush().unwrap();
       
       if !is_final {
-        write!(stdout, "{}{}", termion::color::Fg(termion::color::White), termion::color::Fg(termion::color::Rgb(80, 80, 80))).unwrap();
+        write!(stdout, "{}", termion::color::Fg(termion::color::Yellow)).unwrap();
       }
       
       // exit raw mode for the moment — to make normal term. cmds. work
