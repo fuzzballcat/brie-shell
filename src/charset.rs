@@ -357,13 +357,13 @@ impl From<Colors> for String {
 impl fmt::Display for Colors {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
-      Colors::Number => write!(f, "{}", termion::color::Fg(termion::color::Blue)),
-      Colors::Operator => write!(f, "{}", termion::color::Fg(termion::color::Red)),
-      Colors::BuiltinName => write!(f, "{}", termion::color::Fg(termion::color::Yellow)),
-      Colors::String => write!(f, "{}", termion::color::Fg(termion::color::Green)),
-      Colors::Symbol => write!(f, "{}", termion::color::Fg(termion::color::Magenta)),
-      Colors::Comment => write!(f, "{}", termion::color::Fg(termion::color::Green)),
-      Colors::Reset => write!(f, "{}", termion::color::Fg(termion::color::White))
+      Colors::Number => write!(f, "{}", termion::color::Fg(termion::color::LightBlue)),
+      Colors::Operator => write!(f, "{}", termion::color::Fg(termion::color::LightRed)),
+      Colors::BuiltinName => write!(f, "{}", termion::color::Fg(termion::color::LightYellow)),
+      Colors::String => write!(f, "{}", termion::color::Fg(termion::color::LightGreen)),
+      Colors::Symbol => write!(f, "{}", termion::color::Fg(termion::color::LightMagenta)),
+      Colors::Comment => write!(f, "{}", termion::color::Fg(termion::color::LightGreen)),
+      Colors::Reset => write!(f, "{}", termion::color::Fg(termion::color::LightWhite))
     }
   }
 }
