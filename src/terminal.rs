@@ -109,7 +109,7 @@ fn main() {
     let pathlen;
 
     // "0,0"
-    write!(stdout, "{}{}", termion::cursor::Show, termion::cursor::Save).unwrap();
+    write!(stdout, "{}", termion::cursor::Show).unwrap();
     stdout.flush().unwrap();
     
     if let Ok(path) = env::current_dir() { 
@@ -203,8 +203,12 @@ fn main() {
         }
         _ => {}
       }
-      
-      write!(stdout, "{}{}{}", termion::cursor::Restore, termion::cursor::Right(pathlen as u16), termion::clear::AfterCursor).unwrap();
+
+      let linesup = (xc_pos + pathlen - 1) / (term_cols as usize);
+      if linesup > 0 {
+        write!(stdout, "{}", termion::cursor::Up(linesup as u16)).unwrap();
+      }
+      write!(stdout, "\r{}{}", termion::cursor::Right(pathlen as u16), termion::clear::AfterCursor).unwrap();
 
       let highlight_cmd = pretty::highlight(command);
       
@@ -221,6 +225,8 @@ fn main() {
       
       // exit raw mode for the moment — to make normal term. cmds. work
       drop(stdout);
+
+      let mut linesdown = 0;
 
       if command.graphemes(true).nth(0).unwrap_or(" ") == CHARSET::EnvCommand {
         let c = command.chars().skip(1).collect::<String>();
@@ -265,13 +271,15 @@ fn main() {
             },
             "info" => {
               let torun = cmd[1..].join(" ");
-              match token::tokenize(&torun).and_then(|mut c| parse::parse_commands(&mut c, &environment, &torun)) {
+              let res = match token::tokenize(&torun).and_then(|mut c| parse::parse_commands(&mut c, &environment, &torun)) {
                 Err(e) => Err(e),
                 Ok(o) => Ok(match o {
                   None => "".to_string(),
                   Some(s) => s.to_tree()
                 })
-              }
+              };
+              linesdown += res.as_ref().ok().unwrap_or(&String::new()).lines().count();
+              res
             },
             "help" => {
               if cmd.len() < 2 {
@@ -291,15 +299,20 @@ fn main() {
         let result = eval_pipeline(command.clone(), &mut environment, !is_final);
   
         match result {
-          Err(e) => if is_final { 
+          Err(e) => if is_final {
+            linesdown += e.lines().count();
             write!(io::stdout(), "{}", e) 
-          } else { 
-            write!(io::stdout(), "{}", if e.len() > 0 && e.split(" ").nth(0).unwrap() == error::error("", 0, 0, "", "").split(" ").nth(0).unwrap() { "[err]" } else { e.as_str() } )
+          } else {
+            let towrite = if e.len() > 0 && e.split(" ").nth(0).unwrap() == error::error("", 0, 0, "", "").split(" ").nth(0).unwrap() { "[err]" } else { e.as_str() };
+            linesdown += towrite.lines().count();
+            write!(io::stdout(), "{}", towrite)
           },
           Ok(v) => {
             if is_final && !command.trim().is_empty() && commit_every {
               replablehistory.push(command.clone());
             }
+            let v = format!("{}", v);
+            linesdown += v.lines().count();
             write!(io::stdout(), "{}", v)
           }
         }.unwrap();
@@ -311,16 +324,18 @@ fn main() {
         Err(e) => { println!("\x1b[31m{}\x1b[0m", e); std::process::exit(1); }
       };
 
+      write!(stdout, "{}", termion::color::Fg(termion::color::Reset)).unwrap();
       if !is_final {
-        let r = ((pathlen + xc_pos) as u16) % term_cols;
-        let d = ((pathlen + xc_pos) as u16) / term_cols;
-        write!(stdout, "{}", termion::cursor::Restore).unwrap();
-        if r > 0 { write!(stdout, "{}", termion::cursor::Right(r)).unwrap(); }
-        if d > 0 { write!(stdout, "{}", termion::cursor::Down(d)).unwrap(); }
+        write!(stdout, "\r").unwrap();
+        if linesdown > 0 { write!(stdout, "{}", termion::cursor::Up(linesdown as u16)).unwrap(); }
+
+        // why right but not down??? absolute black magic
+        let right = (pathlen + xc_pos) % (term_cols as usize);
+        if right > 0 { write!(stdout, "{}", termion::cursor::Right(right as u16)).unwrap(); }
+        
         stdout.flush().unwrap();
       } else {
-        write!(stdout, "\n\r{}", 
- termion::color::Fg(termion::color::Reset)).unwrap();
+        write!(stdout, "\n\r").unwrap();
         continue 'termloop;
       }
     }
