@@ -12,3 +12,6 @@ The executable is both the shell (when supplied without arguments) and a file ex
 
 ## Usage
 Being a shell, Brie is self-descriptive.  Try `)help` to start.
+
+## Status
+Brie does not intend to see any major changes in the future.
