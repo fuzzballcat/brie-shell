@@ -232,6 +232,8 @@ fn main() {
         let c = command.chars().skip(1).collect::<String>();
         let mut cmd: Vec<String> = c.trim().split(" ").map(|x| x.to_lowercase()).collect();
 
+        if cmd[0] != "info" || cmd.len() < 2 { linesdown += 1; } // whaaa!??!
+        
         if is_final || cmd[0] == "info" {
           match match cmd[0].as_str() {
             "rtf" => {
