@@ -319,9 +319,9 @@ pub fn highlight(s: &String) -> String {
       out += char;
     }
 
-    if char == "-" {
+    if char == "-" && !in_string {
       if lastchar_wasminus < 2 { lastchar_wasminus += 1; }
-    } else if textbuffer.len() == 0 {
+    } else if textbuffer.len() == 0 || in_string {
       lastchar_wasminus = 0;
     }
   }
